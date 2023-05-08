@@ -1,0 +1,59 @@
+{
+  "name": "squidit/json-to-jsonpath",
+  "description": "JSON to JsonPath expression converter",
+  "version": "1.0.0",
+  "license": "MIT",
+  "type": "library",
+  "keywords": [
+    "JSON",
+    "JSONPath",
+    "converter",
+    "JSONPath expression"
+  ],
+  "authors": [
+    {
+      "name": "Cecil Zorg",
+      "email": "developer@squidit.nl"
+    }
+  ],
+  "config": {
+    "sort-packages": true
+  },
+  "autoload": {
+    "psr-4": {
+      "SquidIT\\Json\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\SquidIT\\Json\\": "tests"
+    }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/squid-it/php-coding-standards.git"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.15",
+    "phpbench/phpbench": "^1.2",
+    "phpstan/phpstan": "^1.10",
+    "phpunit/phpunit": "^10.1",
+    "squidit/php-coding-standards": "^1.0"
+  },
+  "scripts": {
+    "benchmark": "phpbench run tests/Benchmark --report=aggregate --retry-threshold=5",
+    "fix": "php-cs-fixer fix && phpstan analyse -l 9 src tests",
+    "check": "phpstan analyse -l 9 src tests",
+    "test": "phpunit",
+    "test:coverage": [
+      "@putenv XDEBUG_MODE=coverage",
+      "phpunit --coverage-text"
+    ]
+  }
+}

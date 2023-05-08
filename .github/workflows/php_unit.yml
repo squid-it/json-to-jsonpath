@@ -1,0 +1,42 @@
+name: PHP Unit test
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.operating-system }}
+
+    strategy:
+      matrix:
+        php-version:
+          - "8.1"
+          - "8.2"
+        operating-system:
+          - "ubuntu-latest"
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+          ini-values: memory_limit=-1
+          tools: composer:v2, cs2pr
+
+      - name: "Validate composer.json and composer.lock"
+        run: composer validate
+
+      - name: "Install dependencies"
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: "Run test suite"
+        run: composer run-script test
+
+      - name: "Check coding standards"
+        run: "vendor/bin/php-cs-fixer fix -v --dry-run"

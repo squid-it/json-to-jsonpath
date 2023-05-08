@@ -1,0 +1,20 @@
+### PHP STORM
+.idea/
+
+### Project PHP
+/run/*
+/log/*
+!/log/README.md
+.php_cs.cache
+.php-cs-fixer.cache
+/vendor/
+/coverage*
+/phpunit.xml
+/.phpunit.result.cache
+php_errors.log
+.phpunit.cache
+
+### environment
+.env
+.env.test
+.env.daemon
