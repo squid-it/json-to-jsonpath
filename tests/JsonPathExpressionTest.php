@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\SquidIT\Json;
+namespace SquidIT\Tests\Json;
 
 use PHPUnit\Framework\TestCase;
 use SquidIT\Json\JsonPathExpression;
