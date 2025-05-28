@@ -25,7 +25,7 @@ class JsonToJsonPath
      */
     public function __construct(string $json)
     {
-        $json = trim($json);
+        $json = \trim($json);
 
         if (empty($json)) {
             throw new JsonException('Can not decode an empty string to JSON');
@@ -50,27 +50,24 @@ class JsonToJsonPath
      */
     private function decodeJson(string $json): object|array
     {
-        $jsonObject = json_decode($json, false, 512, JSON_THROW_ON_ERROR);
+        $jsonObject = \json_decode($json, false, 512, JSON_THROW_ON_ERROR);
 
         if (empty($jsonObject)) {
             throw new JsonException('Received empty JSON, unable to create JSONPath');
         }
 
-        if (is_object($jsonObject) && empty(get_object_vars($jsonObject))) {
+        if (\is_object($jsonObject) && empty(\get_object_vars($jsonObject))) {
             throw new JsonException('Received empty JSON object, unable to create JSONPath');
         }
 
         // PHP implements a superset of JSON and decodes scalar types, we are not interested in a superset
-        if (is_object($jsonObject) === false && is_array($jsonObject) === false) {
+        if (\is_object($jsonObject) === false && \is_array($jsonObject) === false) {
             throw new JsonException('Received invalid JSON object, unable to create JSONPath');
         }
 
         return $jsonObject;
     }
 
-    /**
-     * @throws JsonException
-     */
     private function parseDecodedJson(): void
     {
         // Initialize RecursiveIteratorIterator
@@ -83,7 +80,7 @@ class JsonToJsonPath
             $parentPath   = self::ROOT_OBJECT;
             $previousType = $this->getType($this->decodedJson);
 
-            // add pre path parts
+            // add pre-path parts
             if (isset($this->pathList[$parentPath]) === false) {
                 $this->addPathToPathList($parentPath, $previousType, null);
             }
@@ -94,11 +91,11 @@ class JsonToJsonPath
 
                 if ($previousType === 'object') {
                     /** @var string $key */
-                    $format   = preg_match('/^[a-z_0-9$]+$/i', $key) ? '%s.%s' : '%s["%s"]';
-                    $jsonPath = sprintf($format, $parentPath, $key);
+                    $format   = \preg_match('/^[a-z_0-9$]+$/i', $key) ? '%s.%s' : '%s["%s"]';
+                    $jsonPath = \sprintf($format, $parentPath, $key);
                 } else {
                     /** @var int $key */
-                    $jsonPath = sprintf('%s[%s]', $parentPath, $key);
+                    $jsonPath = \sprintf('%s[%s]', $parentPath, $key);
                 }
 
                 $parentPath   = $jsonPath;
@@ -112,9 +109,6 @@ class JsonToJsonPath
         }
     }
 
-    /**
-     * @throws JsonException
-     */
     private function addPathToPathList(string $jsonPath, string $type, mixed $value): void
     {
         $this->pathList[$jsonPath] = new JsonPathExpression($jsonPath, $type, $value);
@@ -122,9 +116,9 @@ class JsonToJsonPath
 
     private function getType(mixed $var): string
     {
-        $type = gettype($var);
+        $type = \gettype($var);
 
-        // make type result non PHP specific
+        // make type result non-PHP specific
         if ($type === 'double') {
             $type = 'float';
         }

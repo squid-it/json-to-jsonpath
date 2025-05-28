@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\SquidIT\Json;
+namespace SquidIT\Tests\Json;
 
 use JsonException;
 use PHPUnit\Framework\TestCase;

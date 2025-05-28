@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\SquidIT\Json\Benchmark;
+namespace SquidIT\Tests\Json\Benchmark;
 
 use PhpBench\Benchmark\Metadata\Annotations\Iterations;
 use PhpBench\Benchmark\Metadata\Annotations\Revs;
