@@ -11,7 +11,7 @@ use SquidIT\Json\JsonToJsonPath;
 
 class JsonToJsonPathTest extends TestCase
 {
-    private const EXAMPLE_JSON = <<<END
+    private const string EXAMPLE_JSON = <<<END
                 { "store": {
                     "book": [ 
                       { "category": "reference",
@@ -45,7 +45,7 @@ class JsonToJsonPathTest extends TestCase
                 }
         END;
 
-    private const EXAMPLE_JSON_RESULT = [
+    private const array EXAMPLE_JSON_RESULT = [
         '$'                        => 'object',
         '$.store'                  => 'object',
         '$.store.book'             => 'array',
@@ -173,13 +173,6 @@ class JsonToJsonPathTest extends TestCase
         $this->expectException(JsonException::class);
         $this->expectExceptionMessage('Received empty JSON, unable to create JSONPath');
         new JsonToJsonPath('[]');
-    }
-
-    public function testEmptyJsonObjectStringThrowsJsonException(): void
-    {
-        $this->expectException(JsonException::class);
-        $this->expectExceptionMessage('Received empty JSON object, unable to create JSONPath');
-        new JsonToJsonPath('{}');
     }
 
     /**

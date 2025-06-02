@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace SquidIT\Tests\Json\Benchmark;
 
-use PhpBench\Benchmark\Metadata\Annotations\Iterations;
-use PhpBench\Benchmark\Metadata\Annotations\Revs;
+use PhpBench\Attributes as Bench;
 use SquidIT\Json\JsonToJsonPath;
 
 class JsonToJsonPathBench
 {
-    public const EXAMPLE_JSON = <<<END
+    public const string EXAMPLE_JSON = <<<END
                 { "store": {
                     "book": [ 
                       { "category": "reference",
@@ -44,11 +43,7 @@ class JsonToJsonPathBench
                 }
         END;
 
-    /**
-     * @Revs(1000)
-     *
-     * @Iterations(5)
-     */
+    #[Bench\Iterations(5), Bench\Revs(1000), Bench\Warmup(2)]
     public function benchJsonToJsonPath(): void
     {
         new JsonToJsonPath(self::EXAMPLE_JSON);

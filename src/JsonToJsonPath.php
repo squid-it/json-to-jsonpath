@@ -10,28 +10,33 @@ use RecursiveIteratorIterator;
 
 class JsonToJsonPath
 {
-    private const ROOT_OBJECT = '$';
+    private const string ROOT_OBJECT = '$';
 
-    /**
-     * @var array<mixed, mixed>|object
-     */
-    private array|object $decodedJson;
+    /** @var array<mixed, mixed> */
+    private array $decodedJson;
 
     /** @var array<string, JsonPathExpression> */
     private array $pathList = [];
 
     /**
+     * @param array<mixed>|string $json if $json is an array it needs to be decoded using "associative === true"
+     *
      * @throws JsonException
      */
-    public function __construct(string $json)
+    public function __construct(string|array $json)
     {
-        $json = \trim($json);
+        if (is_string($json)) {
+            $json = \trim($json);
 
-        if (empty($json)) {
-            throw new JsonException('Can not decode an empty string to JSON');
+            if (empty($json)) {
+                throw new JsonException('Can not decode an empty string to JSON');
+            }
+
+            $this->decodedJson = $this->decodeJson($json);
+        } else {
+            $this->decodedJson = $json;
         }
 
-        $this->decodedJson = $this->decodeJson($json);
         $this->parseDecodedJson();
     }
 
@@ -46,22 +51,24 @@ class JsonToJsonPath
     /**
      * @throws JsonException
      *
-     * @return array<mixed, mixed>|object
+     * @return array<mixed, mixed>
      */
-    private function decodeJson(string $json): object|array
+    private function decodeJson(string $json): array
     {
-        $jsonObject = \json_decode($json, false, 512, JSON_THROW_ON_ERROR);
+        if (function_exists('simdjson_decode')) {
+            /** @var array<mixed>|object $jsonObject */
+            $jsonObject = \simdjson_decode($json, true, 512);
+        } else {
+            /** @var array<mixed>|object $jsonObject */
+            $jsonObject = \json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        }
 
         if (empty($jsonObject)) {
             throw new JsonException('Received empty JSON, unable to create JSONPath');
         }
 
-        if (\is_object($jsonObject) && empty(\get_object_vars($jsonObject))) {
-            throw new JsonException('Received empty JSON object, unable to create JSONPath');
-        }
-
         // PHP implements a superset of JSON and decodes scalar types, we are not interested in a superset
-        if (\is_object($jsonObject) === false && \is_array($jsonObject) === false) {
+        if (\is_array($jsonObject) === false) {
             throw new JsonException('Received invalid JSON object, unable to create JSONPath');
         }
 
@@ -72,7 +79,7 @@ class JsonToJsonPath
     {
         // Initialize RecursiveIteratorIterator
         $iterator = new RecursiveIteratorIterator(
-            new RecursiveArrayIterator($this->decodedJson), /* @phpstan-ignore-line */
+            new RecursiveArrayIterator($this->decodedJson),
             RecursiveIteratorIterator::SELF_FIRST
         );
 
@@ -118,11 +125,10 @@ class JsonToJsonPath
     {
         $type = \gettype($var);
 
-        // make type result non-PHP specific
-        if ($type === 'double') {
-            $type = 'float';
-        }
-
-        return $type;
+        return match ($type) {
+            'array'  => \array_is_list($var) ? 'array' : 'object',
+            'double' => 'float',
+            default  => $type,
+        };
     }
 }
